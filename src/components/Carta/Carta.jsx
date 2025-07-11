@@ -1,11 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Carta.css';
 
-const Carta = ({ valor, palo, index, estaBarajando, voltear, small = false }) => {
+const Carta = ({ valor, palo, index, estaBarajando, voltear: propVoltear, small = false }) => {
   const cartaRef = useRef(null);
+  const [volteada, setVolteada] = useState(propVoltear);
   const valoresPoker = {
     1: 'A', 11: 'J', 12: 'Q', 13: 'K'
   };
+
+  useEffect(() => {
+    setVolteada(propVoltear);
+  }, [propVoltear]);
 
   useEffect(() => {
     const carta = cartaRef.current;
@@ -17,18 +22,13 @@ const Carta = ({ valor, palo, index, estaBarajando, voltear, small = false }) =>
     if (!estaBarajando) {
       carta.style.transform = `translateX(0) translateY(${index}px)`;
       carta.className = 'carta';
-      if (voltear) {
-        carta.classList.add('volteada');
-      } else {
-        carta.classList.remove('volteada');
-      }
     }
-  }, [index, estaBarajando, voltear, small]);
+  }, [index, estaBarajando, small]);
 
   return (
     <div 
       ref={cartaRef}
-      className={`carta ${voltear ? 'volteada' : ''} ${small ? 'small' : ''}`}
+      className={`carta ${volteada ? 'volteada' : ''} ${small ? 'small' : ''}`}
     >
       <div className="cara-delantera">
         <img 
