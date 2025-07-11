@@ -32,7 +32,7 @@ const Tablero = () => {
     // Seleccionar todas las cartas DOM
     const cartasDom = document.querySelectorAll('.carta:not(.small)');
     const mitad = Math.ceil(cartasDom.length / 2);
-    
+
     // Animación de separación en dos mitades
     cartasDom.forEach((carta, i) => {
       if (i < mitad) {
@@ -75,104 +75,135 @@ const Tablero = () => {
   const repartir = async () => {
     if (estaBarajando || estaRepartiendo || estaJugando) return;
     setEstaRepartiendo(true);
-    
+
     const posiciones = Object.keys(posicionesCartas);
     let cartasPorRepartir = [...cartas.filter(c => !c.posicion)];
-    
+
     for (let ronda = 0; ronda < 4; ronda++) {
       for (const pos of posiciones) {
         if (cartasPorRepartir.length === 0) break;
-        
+
         const carta = cartasPorRepartir.shift();
         const [fila, col] = pos.split('-').map(Number);
-        
-        setCartas(prev => prev.map(c => 
-          c.id === carta.id ? { 
-            ...c, 
+
+        setCartas(prev => prev.map(c =>
+          c.id === carta.id ? {
+            ...c,
             posicion: pos,
             ordenEnPosicion: ronda,
             volteado: false
           } : c
         ));
-        
+
         await new Promise(resolve => setTimeout(resolve, 150));
       }
     }
-    
+
     setEstaRepartiendo(false);
   };
 
   const animarVolteo = async (cartaId) => {
-    setCartas(prev => prev.map(c => 
+    setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: true } : c
     ));
     await new Promise(resolve => setTimeout(resolve, 300));
-    setCartas(prev => prev.map(c => 
+    setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: false, volteado: true } : c
     ));
     await new Promise(resolve => setTimeout(resolve, 300));
   };
 
-  const juegoAutomatico = async () => {
-    if (estaBarajando || estaRepartiendo || estaJugando) return;
-    setEstaJugando(true);
+const juegoAutomatico = async () => {
+  if (estaBarajando || estaRepartiendo || estaJugando) return;
+  setEstaJugando(true);
 
-    let posicionActual = "3-3";
-    let continuar = true;
+  // Creamos una copia mutable del estado actual de las cartas
+  let cartasActuales = [...cartas];
+  let posicionActual = "3-3";
+  const cartasProcesadas = new Set();
+  let continuar = true;
 
-    while (continuar) {
-      // Obtener cartas en la posición actual (ordenadas por orden descendente)
-      const cartasEnPosicion = [...cartas.filter(c => c.posicion === posicionActual)]
-        .sort((a, b) => b.ordenEnPosicion - a.ordenEnPosicion);
+  while (continuar) {
+    // 1. Buscar todas las cartas en la posición actual, ordenadas (la superior primero)
+    const cartasEnPosicion = cartasActuales
+      .filter(c => c.posicion === posicionActual)
+      .sort((a, b) => b.ordenEnPosicion - a.ordenEnPosicion);
 
-      if (cartasEnPosicion.length === 0) {
-        continuar = false;
-        break;
-      }
+    // 2. Encontrar la primera carta sin voltear que no hayamos procesado
+    const cartaParaVoltear = cartasEnPosicion.find(c => 
+      !c.volteado && !cartasProcesadas.has(c.id)
+    );
 
-      const cartaSuperior = cartasEnPosicion[0];
-      
-      // 1. Animación de volteo
-      await animarVolteo(cartaSuperior.id);
-      
-      // 2. Mostrar carta volteada
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const valorCarta = cartaSuperior.valor;
-      const nuevaPosicion = Object.entries(posicionesCartas).find(
-        ([_, v]) => v === valorCarta
-      )?.[0];
-
-      if (!nuevaPosicion) {
-        continuar = false;
-        break;
-      }
-
-      // 3. Mover la carta a la nueva posición (ya volteada)
-      setCartas(prev => {
-        const cartasEnNuevaPos = prev.filter(c => c.posicion === nuevaPosicion);
-        const nuevoOrden = cartasEnNuevaPos.length > 0 
-          ? Math.max(...cartasEnNuevaPos.map(c => c.ordenEnPosicion)) + 1 
-          : 0;
-
-        return prev.map(c => 
-          c.id === cartaSuperior.id
-            ? { 
-                ...c, 
-                posicion: nuevaPosicion, 
-                ordenEnPosicion: nuevoOrden,
-                volteado: true // Mantenerla volteada
-              } 
-            : c
-        );
-      });
-
-      await new Promise(resolve => setTimeout(resolve, 800));
-      posicionActual = nuevaPosicion;
+    // Si no hay cartas para procesar, terminamos
+    if (!cartaParaVoltear) {
+      continuar = false;
+      break;
     }
 
-    setEstaJugando(false);
-  };
+    // 3. Marcar la carta como procesada
+    cartasProcesadas.add(cartaParaVoltear.id);
+
+    // 4. Animación de volteo (actualiza el estado real)
+    await animarVolteo(cartaParaVoltear.id);
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // 5. Obtener nueva posición basada en el valor
+    const valorCarta = cartaParaVoltear.valor;
+    const nuevaPosicion = Object.entries(posicionesCartas).find(
+      ([_, v]) => v === valorCarta
+    )?.[0];
+
+    if (!nuevaPosicion) {
+      continuar = false;
+      break;
+    }
+
+    // 6. Actualizar la carta en nuestra copia mutable primero
+    const cartasEnNuevaPos = cartasActuales.filter(c => c.posicion === nuevaPosicion);
+    const nuevoOrden = cartasEnNuevaPos.length > 0 
+      ? Math.min(...cartasEnNuevaPos.map(c => c.ordenEnPosicion)) - 1 
+      : 0;
+
+    cartasActuales = cartasActuales.map(c => 
+      c.id === cartaParaVoltear.id
+        ? { 
+            ...c, 
+            posicion: nuevaPosicion, 
+            ordenEnPosicion: nuevoOrden,
+            volteado: true
+          } 
+        : c
+    );
+
+    // 7. Actualizar el estado real de React
+    setCartas(cartasActuales);
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // 8. Verificar si hay más cartas sin voltear en CUALQUIER posición
+    const quedanCartasSinVoltear = cartasActuales.some(c => 
+      !c.volteado && Object.keys(posicionesCartas).includes(c.posicion)
+    );
+
+    if (!quedanCartasSinVoltear) {
+      continuar = false;
+      break;
+    }
+
+    // 9. Decidir la próxima posición a procesar
+    // Prioridad 1: Nueva posición si tiene cartas sin voltear
+    const nuevaPosTieneCartasSinVoltear = cartasActuales.some(
+      c => c.posicion === nuevaPosicion && !c.volteado
+    );
+
+    if (nuevaPosTieneCartasSinVoltear) {
+      posicionActual = nuevaPosicion;
+      cartasProcesadas.clear(); // Resetear para la nueva posición
+    }
+    // Si no, seguimos en la posición actual para procesar otras cartas
+  }
+
+  setEstaJugando(false);
+};
 
   const renderGrid = () => {
     const rows = [];
@@ -183,13 +214,12 @@ const Tablero = () => {
         const valor = posicionesCartas[key];
         const cartasEnPosicion = cartas.filter(c => c.posicion === key)
           .sort((a, b) => a.ordenEnPosicion - b.ordenEnPosicion);
-        
+
         cols.push(
           <div
             key={key}
-            className={`w-24 h-32 flex items-center justify-center relative rounded-lg ${
-              valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
-            }`}
+            className={`w-24 h-32 flex items-center justify-center relative rounded-lg ${valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
+              }`}
           >
             {valor && (
               <span className="absolute top-1 left-1 text-xs font-bold text-gray-700">
@@ -198,7 +228,7 @@ const Tablero = () => {
             )}
             <div className="absolute inset-0 flex items-center justify-center">
               {cartasEnPosicion.map((carta, i) => (
-                <div 
+                <div
                   key={carta.id}
                   className={`absolute ${carta.animando ? 'animacion-voltear' : ''}`}
                   style={{
@@ -206,7 +236,7 @@ const Tablero = () => {
                     zIndex: i,
                   }}
                 >
-                  <Carta 
+                  <Carta
                     valor={carta.valor}
                     palo={carta.palo}
                     voltear={carta.volteado}
@@ -254,7 +284,7 @@ const Tablero = () => {
                 />
               ))}
           </div>
-          
+
           {/* Contenedor de botones */}
           <div className="flex flex-col gap-4">
             <button
@@ -264,7 +294,7 @@ const Tablero = () => {
             >
               {estaBarajando ? 'Barajando...' : 'Barajar Cartas'}
             </button>
-            
+
             <button
               onClick={repartir}
               disabled={estaBarajando || estaRepartiendo || estaJugando}
@@ -272,7 +302,7 @@ const Tablero = () => {
             >
               {estaRepartiendo ? 'Repartiendo...' : 'Repartir Cartas'}
             </button>
-            
+
             <button
               onClick={juegoAutomatico}
               disabled={estaBarajando || estaRepartiendo || estaJugando}
