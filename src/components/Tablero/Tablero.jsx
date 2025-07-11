@@ -23,11 +23,17 @@ const Tablero = () => {
   const [estaBarajando, setEstaBarajando] = useState(false);
   const [estaRepartiendo, setEstaRepartiendo] = useState(false);
   const [estaJugando, setEstaJugando] = useState(false);
+  const [modoManual, setModoManual] = useState(false);
+  const [cartaSeleccionada, setCartaSeleccionada] = useState(null);
+  const [posicionActual, setPosicionActual] = useState("3-3");
 
   const barajar = async () => {
-    if (estaRepartiendo || estaJugando) return;
+    if (estaRepartiendo || estaJugando || modoManual) return;
     setEstaBarajando(true);
     setCartas(prev => prev.map(c => ({ ...c, volteado: false, posicion: null })));
+    setModoManual(false);
+    setCartaSeleccionada(null);
+    setPosicionActual("3-3");
 
     const cartasDom = document.querySelectorAll('.carta:not(.small)');
     const mitad = Math.ceil(cartasDom.length / 2);
@@ -69,8 +75,11 @@ const Tablero = () => {
   };
 
   const repartir = async () => {
-    if (estaBarajando || estaRepartiendo || estaJugando) return;
+    if (estaBarajando || estaRepartiendo || estaJugando || modoManual) return;
     setEstaRepartiendo(true);
+    setModoManual(false);
+    setCartaSeleccionada(null);
+    setPosicionActual("3-3");
 
     const posiciones = Object.keys(posicionesCartas);
     let cartasPorRepartir = [...cartas.filter(c => !c.posicion)];
@@ -102,16 +111,20 @@ const Tablero = () => {
     setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: true } : c
     ));
-    await new Promise(resolve => setTimeout(resolve, 600));
+    // await new Promise(resolve => setTimeout(resolve, 600));  
+    await new Promise(resolve => setTimeout(resolve, 100));  //*para probar
     setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: false, volteado: true } : c
     ));
-    await new Promise(resolve => setTimeout(resolve, 500)); 
+    // await new Promise(resolve => setTimeout(resolve, 500)); 
+    await new Promise(resolve => setTimeout(resolve, 500));  //*para probar 
   };
 
   const juegoAutomatico = async () => {
-    if (estaBarajando || estaRepartiendo || estaJugando) return;
+    if (estaBarajando || estaRepartiendo || estaJugando || modoManual) return;
     setEstaJugando(true);
+    setModoManual(false);
+    setCartaSeleccionada(null);
 
     let cartasActuales = [...cartas];
     let posicionActual = "3-3";
@@ -163,7 +176,8 @@ const Tablero = () => {
       );
 
       setCartas(cartasActuales);
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 200)); //*para probar
 
       const quedanCartasSinVoltear = cartasActuales.some(c =>
         !c.volteado && Object.keys(posicionesCartas).includes(c.posicion)
@@ -187,6 +201,79 @@ const Tablero = () => {
     setEstaJugando(false);
   };
 
+  const iniciarModoManual = async () => {
+    if (estaBarajando || estaRepartiendo || estaJugando || modoManual) return;
+    setModoManual(true);
+    setCartaSeleccionada(null);
+    setPosicionActual("3-3");
+
+    // Voltear la primera carta en la posición 3-3
+    const cartasEnPosicion = cartas
+      .filter(c => c.posicion === "3-3")
+      .sort((a, b) => b.ordenEnPosicion - a.ordenEnPosicion);
+
+    if (cartasEnPosicion.length > 0 && !cartasEnPosicion[0].volteado) {
+      await animarVolteo(cartasEnPosicion[0].id);
+    }
+  };
+
+  const manejarDragStart = (carta) => {
+    if (!modoManual || !carta.volteado) return;
+    setCartaSeleccionada(carta);
+  };
+
+  const manejarDragOver = (e, posicion) => {
+    e.preventDefault();
+  };
+
+  const manejarDrop = async (e, posicion) => {
+    e.preventDefault();
+    if (!modoManual || !cartaSeleccionada || !posicionesCartas[posicion]) return;
+
+    const valorPosicion = posicionesCartas[posicion];
+    if (cartaSeleccionada.valor !== valorPosicion) return;
+
+    // Mover la carta a la nueva posición
+    const cartasEnNuevaPos = cartas.filter(c => c.posicion === posicion);
+    const nuevoOrden = cartasEnNuevaPos.length > 0
+      ? Math.min(...cartasEnNuevaPos.map(c => c.ordenEnPosicion)) - 1
+      : 0;
+
+    setCartas(prev => prev.map(c =>
+      c.id === cartaSeleccionada.id
+        ? {
+          ...c,
+          posicion: posicion,
+          ordenEnPosicion: nuevoOrden,
+          volteado: true
+        }
+        : c
+    ));
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Buscar la siguiente carta para voltear en la nueva posición
+    const cartasEnNuevaPosicion = cartas
+      .filter(c => c.posicion === posicion && c.id !== cartaSeleccionada.id)
+      .sort((a, b) => b.ordenEnPosicion - a.ordenEnPosicion);
+
+    if (cartasEnNuevaPosicion.length > 0 && !cartasEnNuevaPosicion[0].volteado) {
+      await animarVolteo(cartasEnNuevaPosicion[0].id);
+      setPosicionActual(posicion);
+    } else {
+      // Si no hay más cartas en esta posición, buscar en otras posiciones
+      const posicionesConCartasSinVoltear = Object.keys(posicionesCartas).filter(pos => {
+        return cartas.some(c => c.posicion === pos && !c.volteado);
+      });
+
+      if (posicionesConCartasSinVoltear.length > 0) {
+        setPosicionActual(posicionesConCartasSinVoltear[0]);
+      }
+    }
+
+    setCartaSeleccionada(null);
+  };
+
   const renderGrid = () => {
     const rows = [];
     for (let row = 0; row < 7; row++) {
@@ -202,6 +289,8 @@ const Tablero = () => {
             key={key}
             className={`w-24 h-32 flex items-center justify-center relative rounded-lg ${valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
               }`}
+            onDragOver={(e) => manejarDragOver(e, key)}
+            onDrop={(e) => manejarDrop(e, key)}
           >
             {valor && (
               <span className="absolute top-1 left-1 text-xs font-bold text-gray-700">
@@ -217,6 +306,8 @@ const Tablero = () => {
                     transform: `translate(${i * 5}px, ${i * 5}px)`,
                     zIndex: i,
                   }}
+                  draggable={modoManual && carta.volteado}
+                  onDragStart={() => manejarDragStart(carta)}
                 >
                   <Carta
                     valor={carta.valor}
@@ -267,7 +358,7 @@ const Tablero = () => {
           <div className="flex flex-col gap-4">
             <button
               onClick={barajar}
-              disabled={estaBarajando || estaRepartiendo || estaJugando}
+              disabled={estaBarajando || estaRepartiendo || estaJugando || modoManual}
               className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
             >
               {estaBarajando ? 'Barajando...' : 'Barajar Cartas'}
@@ -275,7 +366,7 @@ const Tablero = () => {
 
             <button
               onClick={repartir}
-              disabled={estaBarajando || estaRepartiendo || estaJugando}
+              disabled={estaBarajando || estaRepartiendo || estaJugando || modoManual}
               className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
             >
               {estaRepartiendo ? 'Repartiendo...' : 'Repartir Cartas'}
@@ -283,10 +374,18 @@ const Tablero = () => {
 
             <button
               onClick={juegoAutomatico}
-              disabled={estaBarajando || estaRepartiendo || estaJugando}
+              disabled={estaBarajando || estaRepartiendo || estaJugando || modoManual}
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
             >
               {estaJugando ? 'Jugando...' : 'Juego Automático'}
+            </button>
+
+            <button
+              onClick={iniciarModoManual}
+              disabled={estaBarajando || estaRepartiendo || estaJugando || modoManual}
+              className="px-8 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+            >
+              {modoManual ? 'Modo Manual Activado' : 'Juego Manual'}
             </button>
           </div>
         </div>
