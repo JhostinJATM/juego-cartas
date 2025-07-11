@@ -1,66 +1,77 @@
-/* src/components/Carta.css */
 .carta {
   width: 100px;
   height: 150px;
   position: absolute;
-  left: 50%;
+  left: calc(50% - 50px);
   top: 0;
   border-radius: 8px;
-  box-shadow: 
-    0 1px 3px rgba(0,0,0,0.12),
-    0 1px 2px rgba(0,0,0,0.24);
-  transform-origin: bottom center;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  backface-visibility: hidden;
   transform-style: preserve-3d;
+  transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  transform: translateY(var(--posY-final, 0));
 }
 
-/* Animación de separación inicial */
-@keyframes separar-mitades {
-  0% {
-    transform: translateX(-50%) translateY(var(--posY-inicial));
-  }
-  100% {
-    transform: translateX(var(--posX-final)) rotateZ(var(--rotacion-final)) translateY(-20px);
+.carta.volteada {
+  transform: translateY(var(--posY-final, 0)) rotateY(180deg);
+}
+
+.cara-delantera, .cara-trasera {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  /* Agrega estos estilos para el borde */
+  border: 1px solid #000;
+  box-sizing: border-box; /* Evita que el borde afecte las dimensiones */
+}
+
+/* Asegura que las imágenes respeten el borde */
+.cara-delantera img, .cara-trasera img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px; /* Un poco menos que el contenedor para no cortar el borde */
+  display: block;
+}
+
+
+/* Animaciones de barajado */
+.separar-mitad-izquierda {
+  animation: separar-izquierda 0.8s forwards;
+}
+
+.separar-mitad-derecha {
+  animation: separar-derecha 0.8s forwards;
+}
+
+.animacion-intercalar {
+  animation: intercalar 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes separar-izquierda {
+  to {
+    transform: translateX(-120px) rotateZ(-12deg) translateY(var(--posY-inicial));
   }
 }
 
-/* Animación de caída */
-@keyframes caer-carta {
-  0% {
-    transform: translateX(var(--posX-inicial)) rotateZ(var(--rotacion-inicial)) translateY(-30px);
-    opacity: 0.9;
+@keyframes separar-derecha {
+  to {
+    transform: translateX(120px) rotateZ(12deg) translateY(var(--posY-inicial));
   }
-  60% {
-    transform: translateX(0) rotateZ(0) translateY(-60px);
-    opacity: 1;
+}
+
+@keyframes intercalar {
+  0% {
+    transform: translateX(var(--posX-final)) rotateZ(var(--rot-final)) translateY(var(--posY-inicial));
+  }
+  40% {
+    transform: translateX(0) rotateZ(0) translateY(-50px);
+  }
+  70% {
+    transform: translateX(0) rotateZ(0) translateY(-30px);
   }
   100% {
     transform: translateX(0) rotateZ(0) translateY(var(--posY-final));
-    opacity: 1;
   }
-}
-
-/* Clases para las animaciones */
-.separar-mitad {
-  animation: separar-mitades 0.4s ease-out forwards;
-}
-
-.caer-carta {
-  animation: caer-carta 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Estilo para el mazo */
-.mazo-container {
-  position: relative;
-  height: 180px;
-  width: 350px;
-  perspective: 1000px;
-  margin: 0 auto;
-}
-
-.mazo {
-  position: relative;
-  height: 100%;
-  width: 100%;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Tablero.css';
+import Carta from '../Carta/Carta';
 
 const posicionesCartas = {
   "0-0": 7,
@@ -18,47 +19,65 @@ const posicionesCartas = {
 };
 
 const Tablero = () => {
-  const [cartas, setCartas] = useState(Array(52).fill(0).map((_, i) => i));
+  const [cartas, setCartas] = useState(
+    Array(52).fill(0).map((_, i) => ({
+      id: i,
+      valor: (i % 13) + 1,
+      palo: ['C', 'T', 'D', 'E'][Math.floor(i / 13)],
+      volteado: false
+    }))
+  );
   const [estaBarajando, setEstaBarajando] = useState(false);
 
   const barajar = async () => {
     setEstaBarajando(true);
+    setCartas(prev => prev.map(carta => ({ ...carta, volteado: false })));
 
     const cartasDom = document.querySelectorAll('.carta');
-    const mitad = cartasDom.length / 2;
-
-    // 1. Separar visualmente en dos mitades
-     cartasDom.forEach((carta, i) => {
-    if (i < mitad) {
-      carta.style.setProperty('--posX-inicial', '-120px'); // Aumenté de -90px a -120px
-      carta.style.setProperty('--rot-inicial', '-12deg');  // Aumenté la inclinación
-      carta.style.transform = 'translateX(-180px) rotateZ(-12deg)';
-    } else {
-      carta.style.setProperty('--posX-inicial', '120px');  // Aumenté de 90px a 120px
-      carta.style.setProperty('--rot-inicial', '12deg');   // Aumenté la inclinación
-      carta.style.transform = 'translateX(180px) rotateZ(12deg)';
-    }
-    carta.style.zIndex = i + 1;
-  });
-
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // 2. Animación de intercalado
-    for (let i = 0; i < mitad; i++) {
-      cartasDom[i].style.setProperty('--posY-final', `${i * 2}px`);
-      cartasDom[i].classList.add('animacion-mover');
-      cartasDom[i].style.zIndex = 20 + (i * 2);
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      cartasDom[mitad + i].style.setProperty('--posY-final', `${i * 2 + 1}px`);
-      cartasDom[mitad + i].classList.add('animacion-mover');
-      cartasDom[mitad + i].style.zIndex = 20 + (i * 2 + 1);
-      await new Promise(resolve => setTimeout(resolve, 200));
-    }
+    const mitad = Math.ceil(cartasDom.length / 2);
+    
+    // 1. Separar en dos mitades
+    cartasDom.forEach((carta, i) => {
+      carta.style.setProperty('--posY-inicial', `${i}px`);
+      if (i < mitad) {
+        carta.style.setProperty('--posX-final', '-120px');
+        carta.style.setProperty('--rot-final', '-12deg');
+        carta.classList.add('separar-mitad-izquierda');
+      } else {
+        carta.style.setProperty('--posX-final', '120px');
+        carta.style.setProperty('--rot-final', '12deg');
+        carta.classList.add('separar-mitad-derecha');
+      }
+    });
 
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    // 3. Mezclar el array lógicamente
+    // 2. Intercalar cartas
+    for (let i = 0; i < mitad; i++) {
+      // Carta de la izquierda
+      if (cartasDom[i]) {
+        cartasDom[i].style.setProperty('--posY-final', `${i*2}px`);
+        cartasDom[i].classList.remove('separar-mitad-izquierda');
+        cartasDom[i].classList.add('animacion-intercalar');
+        cartasDom[i].style.zIndex = 20 + (i * 2);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Carta de la derecha
+      if (cartasDom[mitad + i]) {
+        cartasDom[mitad + i].style.setProperty('--posY-final', `${i*2 + 1}px`);
+        cartasDom[mitad + i].classList.remove('separar-mitad-derecha');
+        cartasDom[mitad + i].classList.add('animacion-intercalar');
+        cartasDom[mitad + i].style.zIndex = 20 + (i * 2 + 1);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // 3. Mezclar el array
     setCartas(prev => {
       const nuevo = [...prev];
       for (let i = nuevo.length - 1; i > 0; i--) {
@@ -70,7 +89,7 @@ const Tablero = () => {
 
     // 4. Resetear estilos
     cartasDom.forEach((carta, i) => {
-      carta.classList.remove('animacion-mover');
+      carta.classList.remove('animacion-intercalar');
       carta.style.transform = `translateX(0) translateY(${i}px)`;
       carta.style.zIndex = i + 1;
     });
@@ -106,25 +125,21 @@ const Tablero = () => {
   return (
     <div className="flex flex-col items-center gap-8 p-4">
       <div className="inline-block">{renderGrid()}</div>
-
-      {/* Espacio de baraja - IDÉNTICO al HTML original */}
-      <div className="mazo" style={{ height: '220px', width: '320px', marginBottom: '50px' }}>
-        <div className="espacio-central"></div>
-        {cartas.map((_, i) => (
-          <div
-            key={i}
-            className="carta"
-            style={{
-              zIndex: i + 1,
-              left: 'calc(50% - 75px)',
-              top: `${i}px`,
-              backgroundImage: `url(/assets/modelo2/${Math.floor(i / 13) + 1}${['C', 'T', 'D', 'E'][i % 4]}.png)`,
-              backgroundSize: 'cover'
-            }}
+      
+      <div className="mazo" style={{ height: '220px', width: '400px', marginBottom: '50px' }}>
+        {cartas.map((carta, index) => (
+          <Carta
+            key={carta.id}
+            valor={carta.valor}
+            palo={carta.palo}
+            index={index}
+            totalCartas={cartas.length}
+            estaBarajando={estaBarajando}
+            voltear={carta.volteado}
           />
         ))}
       </div>
-
+      
       <button
         onClick={barajar}
         disabled={estaBarajando}

@@ -1,8 +1,0 @@
-mira vamos desde el comienzo paso por paso, primero necesito las cartas y su componente para reutilizarlo en las cartas, tengo las imagenes dentro de assets/modelo2 y se llaman:
-
-para los corazones: 1C.png, 2C.png, 3C.png, ..., 11C.png, 12C.png, 13C.png
-para los treboles: 1T.png, 2T.png, 3T.png, ... 13.png
-para los diamantes: 1D.png, 2D.png, ... 13D.png
-para las espadas(picas): 1E.png, 2E.png, ... 13E.png
-
-una vez que tengo las cartas, debo ponerlas en el centro del componente EspacioBaraja, pero no crees otro componente solo pon este espacio debajo del grid de Tablero, debe poner las cartas apiladas como un mazo de cartas una encima de la otra, alado de eso al lado derecho pon un boton que diga barajar, y que cuando lo haga, el arreglo de cartas se vayan mezclando, usando la animacion de barajeo.html
