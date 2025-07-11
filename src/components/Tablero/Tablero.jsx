@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './Tablero.css';
 import Carta from '../Carta/Carta';
 
 const posicionesCartas = {
@@ -30,7 +29,7 @@ const Tablero = () => {
 
     const cartasDom = document.querySelectorAll('.carta');
     const mitad = Math.ceil(cartasDom.length / 2);
-    
+
     // Animación de barajado
     cartasDom.forEach((carta, i) => {
       carta.style.setProperty('--posY-inicial', `${i}px`);
@@ -49,14 +48,14 @@ const Tablero = () => {
 
     for (let i = 0; i < mitad; i++) {
       if (cartasDom[i]) {
-        cartasDom[i].style.setProperty('--posY-final', `${i*2}px`);
+        cartasDom[i].style.setProperty('--posY-final', `${i * 2}px`);
         cartasDom[i].classList.replace('separar-mitad-izquierda', 'animacion-intercalar');
         cartasDom[i].style.zIndex = 20 + (i * 2);
       }
       await new Promise(resolve => setTimeout(resolve, 200));
-      
+
       if (cartasDom[mitad + i]) {
-        cartasDom[mitad + i].style.setProperty('--posY-final', `${i*2 + 1}px`);
+        cartasDom[mitad + i].style.setProperty('--posY-final', `${i * 2 + 1}px`);
         cartasDom[mitad + i].classList.replace('separar-mitad-derecha', 'animacion-intercalar');
         cartasDom[mitad + i].style.zIndex = 20 + (i * 2 + 1);
       }
@@ -81,30 +80,29 @@ const Tablero = () => {
   const repartir = async () => {
     if (estaBarajando || estaRepartiendo) return;
     setEstaRepartiendo(true);
-    
+
     const posiciones = Object.keys(posicionesCartas);
     let cartasPorRepartir = [...cartas.filter(c => !c.posicion)];
-    
+
     for (let ronda = 0; ronda < 4; ronda++) {
       for (const pos of posiciones) {
         if (cartasPorRepartir.length === 0) break;
-        
+
         const carta = cartasPorRepartir.shift();
         const [fila, col] = pos.split('-').map(Number);
-        
-        // Actualizar estado de la carta
-        setCartas(prev => prev.map(c => 
-          c.id === carta.id ? { 
-            ...c, 
+
+        setCartas(prev => prev.map(c =>
+          c.id === carta.id ? {
+            ...c,
             posicion: pos,
             ordenEnPosicion: ronda
           } : c
         ));
-        
+
         await new Promise(resolve => setTimeout(resolve, 150));
       }
     }
-    
+
     setEstaRepartiendo(false);
   };
 
@@ -116,16 +114,21 @@ const Tablero = () => {
         const key = `${row}-${col}`;
         const valor = posicionesCartas[key];
         const cartasEnPosicion = cartas.filter(c => c.posicion === key);
-        
+
         cols.push(
           <div
             key={key}
-            className="w-24 h-32 border-2 border-gray-300 flex items-center justify-center bg-green-100 relative"
+            className={`w-24 h-32 flex items-center justify-center relative rounded-lg ${valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
+              }`}
           >
-            {valor ?? ""}
+            {valor && (
+              <span className="absolute top-1 left-1 text-xs font-bold text-gray-700">
+                {valor}
+              </span>
+            )}
             <div className="absolute inset-0 flex items-center justify-center">
               {cartasEnPosicion.map((carta, i) => (
-                <div 
+                <div
                   key={carta.id}
                   className="absolute"
                   style={{
@@ -133,7 +136,7 @@ const Tablero = () => {
                     zIndex: i
                   }}
                 >
-                  <Carta 
+                  <Carta
                     valor={carta.valor}
                     palo={carta.palo}
                     voltear={carta.volteado}
@@ -145,51 +148,66 @@ const Tablero = () => {
           </div>
         );
       }
-      rows.push(cols);
+      rows.push(
+        <div key={row} className="flex justify-center">
+          {cols}
+        </div>
+      );
     }
-    return rows.map((cols, i) => (
-      <div key={i} className="flex">
-        {cols}
-      </div>
-    ));
+    return rows;
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 p-4">
-      <div className="inline-block">{renderGrid()}</div>
-      
-      <div className="flex items-center gap-8">
-        <div className="mazo" style={{ height: '180px', width: '300px' }}>
-          {cartas
-            .filter(c => !c.posicion)
-            .map((carta, index) => (
-              <Carta
-                key={carta.id}
-                valor={carta.valor}
-                palo={carta.palo}
-                index={index}
-                estaBarajando={estaBarajando}
-                voltear={carta.volteado}
-              />
-            ))}
+    <div
+      className="flex flex-row min-h-screen w-full bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: 'url(/assets/tablero/tablero.png)',
+      }}
+    >
+      {/* Parte izquierda - Grid */}
+      <div className="flex-1 p-8 flex items-center justify-center">
+        <div className="relative w-full h-full max-w-4xl">
+          {renderGrid()}
         </div>
-        
-        <div className="flex flex-col gap-4">
-          <button
-            onClick={barajar}
-            disabled={estaBarajando || estaRepartiendo}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {estaBarajando ? 'Barajando...' : 'Barajar'}
-          </button>
-          
-          <button
-            onClick={repartir}
-            disabled={estaBarajando || estaRepartiendo}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
-          >
-            {estaRepartiendo ? 'Repartiendo...' : 'Repartir'}
-          </button>
+      </div>
+
+      {/* Parte derecha - Baraja y botones */}
+      <div className="w-1/3 p-8 flex flex-col justify-center">
+        <div className="space-y-8">
+          {/* Contenedor de la baraja */}
+          <div className="relative h-48 w-full flex justify-center items-center">
+            {cartas
+              .filter(c => !c.posicion)
+              .map((carta, index) => (
+                <Carta
+                  key={carta.id}
+                  valor={carta.valor}
+                  palo={carta.palo}
+                  index={index}
+                  estaBarajando={estaBarajando}
+                  voltear={carta.volteado}
+                />
+              ))}
+          </div>
+
+          {/* Contenedor de botones */}
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={barajar}
+              disabled={estaBarajando || estaRepartiendo}
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+            >
+              {estaBarajando ? 'Barajando...' : 'Barajar Cartas'}
+            </button>
+
+            <button
+              onClick={repartir}
+              disabled={estaBarajando || estaRepartiendo}
+              className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+            >
+              {estaRepartiendo ? 'Repartiendo...' : 'Repartir Cartas'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
