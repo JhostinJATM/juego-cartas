@@ -1,11 +1,11 @@
+import Tablero from "./components/Tablero/Tablero"
 
 function App() {
-
   return (
-    <>
-     <h1 className="text-4xl text-orange-500">Tailwind</h1>
-    </>
-  )
+    <div className="min-h-screen bg-gray-100 flex justify-center items-start pt-8">
+      <Tablero/>
+    </div>
+  );
 }
 
-export default App
+export default App;

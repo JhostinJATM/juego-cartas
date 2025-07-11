@@ -1,0 +1,52 @@
+/* Estilos IDÉNTICOS al barajeo.html */
+.mazo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.carta {
+  width: 150px;
+  height: 200px;
+  position: absolute;
+  border-radius: 10px;
+  box-shadow: 
+    0 1px 1px rgba(0,0,0,0.1),
+    0 2px 2px rgba(0,0,0,0.1),
+    0 4px 4px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  transform-origin: bottom center;
+  background-color: #000000ff; /* Solo para cartas sin imagen */
+}
+
+.espacio-central {
+  position: absolute;
+  width: 20px;
+  height: 210px;
+  background-color: rgba(0,0,0,0.1);
+  left: calc(50% - 10px);
+  top: -5px;
+  border-radius: 3px;
+  z-index: 0;
+  display: none;
+}
+
+@keyframes mover-y-saltar {
+  0% { 
+    transform: translateX(var(--posX-inicial)) rotateZ(var(--rot-inicial)) translateY(0); 
+  }
+  40% { 
+    transform: translateX(0) rotateZ(0) translateY(-50px); 
+  }
+  70% { 
+    transform: translateX(0) rotateZ(0) translateY(-30px); 
+  }
+  100% { 
+    transform: translateX(0) rotateZ(0) translateY(var(--posY-final)); 
+  }
+}
+
+.animacion-mover {
+  animation: mover-y-saltar 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}

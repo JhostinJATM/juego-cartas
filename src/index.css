@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@keyframes shuffle {
+  0% {
+    transform: translateX(var(--posX-inicial)) rotateZ(var(--rot-inicial)) translateY(0);
+  }
+  40% {
+    transform: translateX(0) rotateZ(0) translateY(-50px);
+  }
+  70% {
+    transform: translateX(0) rotateZ(0) translateY(-30px);
+  }
+  100% {
+    transform: translateX(0) rotateZ(0) translateY(var(--posY-final));
+  }
+}
+
+.animate-shuffle {
+  animation: shuffle 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
