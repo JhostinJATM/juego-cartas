@@ -17,7 +17,11 @@ const Carta = ({ valor, palo, index, estaBarajando, voltear, small = false }) =>
     if (!estaBarajando) {
       carta.style.transform = `translateX(0) translateY(${index}px)`;
       carta.className = 'carta';
-      if (voltear) carta.classList.add('volteada');
+      if (voltear) {
+        carta.classList.add('volteada');
+      } else {
+        carta.classList.remove('volteada');
+      }
     }
   }, [index, estaBarajando, voltear, small]);
 
