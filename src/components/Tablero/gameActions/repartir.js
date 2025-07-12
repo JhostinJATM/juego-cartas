@@ -7,10 +7,18 @@ export const repartir = async ({
   setPosicionActual,
   posicionesCartas
 }) => {
+  // Crear y configurar el audio
+  const audioRepartir = new Audio('/assets/sound/reparticion.mp3');
+  audioRepartir.loop = true;
+  audioRepartir.playbackRate = 2.7; // Acelera el audio un 50% (1.0 es velocidad normal)
+
   setEstaRepartiendo(true);
   setModoManual(false);
   setCartaSeleccionada(null);
   setPosicionActual("3-3");
+
+  // Iniciar reproducción del audio
+  audioRepartir.play().catch(e => console.log("No se pudo reproducir audio:", e));
 
   const posiciones = Object.keys(posicionesCartas);
   let cartasPorRepartir = [...cartas.filter(c => !c.posicion)];
@@ -20,7 +28,6 @@ export const repartir = async ({
       if (cartasPorRepartir.length === 0) break;
 
       const carta = cartasPorRepartir.shift();
-    //   const [fila, col] = pos.split('-').map(Number);
 
       setCartas(prev => prev.map(c =>
         c.id === carta.id ? {
@@ -31,9 +38,10 @@ export const repartir = async ({
         } : c
       ));
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise(resolve => setTimeout(resolve, 300)); 
     }
   }
 
   setEstaRepartiendo(false);
+  audioRepartir.pause();
 };
