@@ -19,13 +19,15 @@ export default function SeleccionCartas() {
           const modeloId = `modelo${i}`;
           
           try {
-            const response = await fetch(`/assets/${modeloId}/nombre.txt`);
+            const response = await fetch(`/assets/${modeloId}/info.json`);
             if (!response.ok) continue;
             
-            const nombre = await response.text();
+            const info = await response.json();
             
             modelosDisponibles.push({
-              nombre: nombre.trim(),
+              nombre: info.nombre,
+              licencia: info.licencia,
+              creador: info.creador,
               id: modeloId,
               previews: {
                 C: `/assets/${modeloId}/1C.png`,
@@ -91,7 +93,7 @@ export default function SeleccionCartas() {
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Título con estilo de videojuego */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-100 text-stroke-purple font-game tracking-wider">
+          <h1 className="text-4xl md:text-5xl font-bold mt-5 mb-4 text-gray-100 text-stroke-purple font-game tracking-wider">
             SELECCIÓN DE CARTAS
           </h1>
           <p className="text-lg text-gray-400">

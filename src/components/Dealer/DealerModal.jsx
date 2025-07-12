@@ -5,7 +5,6 @@ export const DealerModal = ({ onComenzar }) => {
   const { config, actualizarPregunta } = useContext(ConfigContext);
   const [pregunta, setPregunta] = useState(config.preguntaUsuario || '');
 
-  // Evitar que se muestre si ya hay pregunta
   useEffect(() => {
     if (config.preguntaUsuario) {
       onComenzar();
@@ -21,24 +20,38 @@ export const DealerModal = ({ onComenzar }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 shadow-xl">
-        <h2 className="text-xl font-bold mb-4">¿Qué quieres adivinar?</h2>
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-gray-800 border-2 p-6 rounded-lg max-w-md w-full mx-4 shadow-[0_0_20px_rgba(167,139,250,0.3)]">
+        <h2 className="text-2xl font-bold mb-6 text-purple-400 font-game tracking-wider text-center">
+          ¿QUÉ QUIERES ADIVINAR?
+        </h2>
+        
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={pregunta}
-            onChange={(e) => setPregunta(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Escribe tu pregunta aquí..."
-            required
-            minLength={3}
-          />
+          <div className="mb-6 relative">
+            <input
+              type="text"
+              value={pregunta}
+              onChange={(e) => setPregunta(e.target.value)}
+              className="w-full bg-gray-700 border-2 border-gray-600 text-gray-100 p-3 rounded-md 
+                        focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-500
+                        placeholder-gray-400 transition-all duration-200"
+              placeholder="Escribe tu pregunta aquí..."
+              required
+              minLength={3}
+            />
+            <div className="absolute bottom-0 left-0 h-0.5 bg-purple-400 transition-all duration-500 w-0 focus-within:w-full"></div>
+          </div>
+          
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+            className="w-full bg-purple-600 text-white py-3 px-4 rounded-md 
+                      hover:bg-purple-700 hover:border-purple-400 border-2 border-transparent
+                      transition-all duration-200 font-game tracking-wider text-lg
+                      flex items-center justify-center gap-2 group"
           >
-            Comenzar
+            <span className="group-hover:scale-110 transition-transform">◆</span>
+            COMENZAR
+            <span className="group-hover:scale-110 transition-transform">◆</span>
           </button>
         </form>
       </div>

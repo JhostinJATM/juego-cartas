@@ -5,12 +5,8 @@ export const ResultadoModal = ({ onCerrar }) => {
     const { config, reiniciarJuego } = useContext(ConfigContext);
 
     const handleVolverAJugar = () => {
-        // Guardamos la configuración actual antes de reiniciar
         const configActual = { ...config };
-
         reiniciarJuego();
-
-        // Restauramos las preferencias de configuración después de reiniciar
         setTimeout(() => {
             localStorage.setItem('gameConfig', JSON.stringify({
                 ...configActual,
@@ -30,40 +26,54 @@ export const ResultadoModal = ({ onCerrar }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 text-center">
-                <h2 className="text-2xl font-bold mb-4">
-                    {config.resultadoJuego === 'ganado' ? '¡Has ganado!' : '¡Has perdido!'}
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50 backdrop-blur-sm">
+            <div className="bg-gray-800 border-2 p-6 rounded-lg max-w-md w-full mx-4 text-center shadow-[0_0_20px_rgba(167,139,250,0.3)]">
+                <h2 className="text-3xl font-bold mb-4 text-purple-400 font-game tracking-wider">
+                    {config.resultadoJuego === 'ganado' ? '¡HAS GANADO!' : '¡HAS PERDIDO!'}
                 </h2>
-                <p className="mb-4 text-gray-700">
-                    {config.resultadoJuego === 'ganado'
-                        ? 'El oráculo ha respondido a tu pregunta.'
-                        : 'El oráculo no ha encontrado respuesta.'}
-                </p>
-                <p className="mb-6 font-semibold text-gray-800">
-                    Tu pregunta fue: "{config.preguntaUsuario}"
-                </p>
+                
+                <div className="mb-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+                    <p className="text-gray-300 mb-2">Tu pregunta fue:</p>
+                    <p className="text-gray-100 font-medium italic">"{config.preguntaUsuario}"</p>
+                </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                        onClick={onCerrar}
-                        className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-                    >
-                        Cerrar
-                    </button>
+                <div className="mb-6">
+                    <p className={`text-xl font-game ${config.resultadoJuego === 'ganado' ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {config.resultadoJuego === 'ganado' 
+                            ? '¡ESTÁS CON SUERTE!' 
+                            : 'LAMENTABLEMENTE NO...'}
+                    </p>
+                    {config.resultadoJuego === 'ganado' && (
+                        <p className="text-gray-300 mt-2">El oráculo ha respondido a tu pregunta</p>
+                    )}
+                </div>
 
+                <div className="flex flex-col gap-3">
                     <button
                         onClick={handleVolverAJugar}
-                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="w-full bg-purple-600 text-white py-2 px-4 rounded-md 
+                                  hover:bg-purple-700 hover:border-purple-400 border-2 border-transparent
+                                  transition-all duration-200 font-game tracking-wider"
                     >
-                        Volver a jugar
+                        VOLVER A JUGAR
                     </button>
 
                     <button
                         onClick={handleIrAlInicio}
-                        className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                        className="w-full bg-gray-700 text-gray-100 py-2 px-4 rounded-md 
+                                  hover:bg-gray-600 hover:border-gray-500 border-2 border-transparent
+                                  transition-all duration-200 font-game tracking-wider"
                     >
-                        Inicio
+                        IR AL INICIO
+                    </button>
+
+                    <button
+                        onClick={onCerrar}
+                        className="w-full bg-transparent text-purple-400 py-2 px-4 rounded-md 
+                                  hover:text-purple-300 hover:border-purple-400 border-2 border-gray-700
+                                  transition-all duration-200 font-game tracking-wider"
+                    >
+                        CERRAR
                     </button>
                 </div>
             </div>
