@@ -15,13 +15,6 @@ export default function Juego() {
       reiniciarJuego();
       setMostrarDealerModal(true);
       setInicializado(true);
-      
-      const audioAmbiente = new Audio('/assets/sound/musica_ambiente.mp3');
-      audioAmbiente.loop = true;
-      audioAmbiente.volume = 0.1;
-      audioAmbiente.play().catch(e => console.log("Error de audio:", e));
-
-      return () => audioAmbiente.pause();
     }
   }, [reiniciarJuego, inicializado]);
 

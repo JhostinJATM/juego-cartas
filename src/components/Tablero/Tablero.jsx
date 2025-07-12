@@ -135,38 +135,104 @@ const Tablero = ({ onJuegoTerminado }) => {
                       />
                     ))}
                 </div>
-
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
+                  {/* Botón Barajar */}
                   <button
                     onClick={() => barajar(tableroLogic)}
                     disabled={tableroLogic.estaBarajando || tableroLogic.estaRepartiendo || tableroLogic.estaJugando || tableroLogic.modoManual}
-                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+                    className={`px-6 py-2.5 rounded-md font-bold tracking-wide transition-all duration-200 relative overflow-hidden group ${tableroLogic.estaBarajando
+                        ? 'bg-gray-800 border-2 border-purple-400 shadow-purple-glow'
+                        : 'bg-gray-800 border-2 border-purple-500 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(167,139,250,0.5)]'
+                      } disabled:bg-gray-900 disabled:border-gray-700 disabled:text-gray-500 disabled:shadow-none text-gray-100`}
                   >
-                    {tableroLogic.estaBarajando ? 'Barajando...' : 'Barajar Cartas'}
+                    {tableroLogic.estaBarajando ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-purple-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        BARAJANDO...
+                      </span>
+                    ) : (
+                      <>
+                        BARAJAR CARTAS
+                        <span className="absolute bottom-0 left-0 h-0.5 bg-purple-400 transition-all duration-300 w-0 group-hover:w-full"></span>
+                      </>
+                    )}
                   </button>
 
+                  {/* Botón Repartir */}
                   <button
                     onClick={() => repartir({ ...tableroLogic, posicionesCartas })}
                     disabled={tableroLogic.estaBarajando || tableroLogic.estaRepartiendo || tableroLogic.estaJugando || tableroLogic.modoManual}
-                    className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+                    className={`px-6 py-2.5 rounded-md font-bold tracking-wide transition-all duration-200 relative overflow-hidden group ${tableroLogic.estaRepartiendo
+                        ? 'bg-gray-800 border-2 border-purple-400 shadow-purple-glow'
+                        : 'bg-gray-800 border-2 border-purple-500 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(167,139,250,0.5)]'
+                      } disabled:bg-gray-900 disabled:border-gray-700 disabled:text-gray-500 disabled:shadow-none text-gray-100`}
                   >
-                    {tableroLogic.estaRepartiendo ? 'Repartiendo...' : 'Repartir Cartas'}
+                    {tableroLogic.estaRepartiendo ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-purple-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        REPARTIENDO...
+                      </span>
+                    ) : (
+                      <>
+                        REPARTIR CARTAS
+                        <span className="absolute bottom-0 left-0 h-0.5 bg-purple-400 transition-all duration-300 w-0 group-hover:w-full"></span>
+                      </>
+                    )}
                   </button>
 
+                  {/* Botón Juego Automático */}
                   <button
                     onClick={handleJuegoAutomatico}
                     disabled={tableroLogic.estaBarajando || tableroLogic.estaRepartiendo || tableroLogic.estaJugando || tableroLogic.modoManual}
-                    className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+                    className={`px-6 py-2.5 rounded-md font-bold tracking-wide transition-all duration-200 relative overflow-hidden group ${tableroLogic.estaJugando
+                        ? 'bg-gray-800 border-2 border-purple-400 shadow-purple-glow'
+                        : 'bg-gray-800 border-2 border-purple-500 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(167,139,250,0.5)]'
+                      } disabled:bg-gray-900 disabled:border-gray-700 disabled:text-gray-500 disabled:shadow-none text-gray-100`}
                   >
-                    {tableroLogic.estaJugando ? 'Jugando...' : 'Juego Automático'}
+                    {tableroLogic.estaJugando ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-purple-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        JUGANDO...
+                      </span>
+                    ) : (
+                      <>
+                        JUEGO AUTOMÁTICO
+                        <span className="absolute bottom-0 left-0 h-0.5 bg-purple-400 transition-all duration-300 w-0 group-hover:w-full"></span>
+                      </>
+                    )}
                   </button>
 
+                  {/* Botón Modo Manual */}
                   <button
                     onClick={handleModoManual}
                     disabled={tableroLogic.estaBarajando || tableroLogic.estaRepartiendo || tableroLogic.estaJugando || tableroLogic.modoManual}
-                    className="px-8 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400 transition-colors text-lg font-medium w-full"
+                    className={`px-6 py-2.5 rounded-md font-bold tracking-wide transition-all duration-200 relative overflow-hidden group ${tableroLogic.modoManual
+                        ? 'bg-gray-800 border-2 border-purple-400 shadow-purple-glow animate-pulse'
+                        : 'bg-gray-800 border-2 border-purple-500 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(167,139,250,0.5)]'
+                      } disabled:bg-gray-900 disabled:border-gray-700 disabled:text-gray-500 disabled:shadow-none text-gray-100`}
                   >
-                    {tableroLogic.modoManual ? 'Modo Manual Activado' : 'Juego Manual'}
+                    {tableroLogic.modoManual ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-300" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        MODO MANUAL ACTIVADO
+                      </span>
+                    ) : (
+                      <>
+                        JUEGO MANUAL
+                        <span className="absolute bottom-0 left-0 h-0.5 bg-purple-400 transition-all duration-300 w-0 group-hover:w-full"></span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
