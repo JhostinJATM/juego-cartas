@@ -111,13 +111,12 @@ const Tablero = () => {
     setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: true } : c
     ));
-    // await new Promise(resolve => setTimeout(resolve, 600));  
-    await new Promise(resolve => setTimeout(resolve, 100));  //*para probar
+    await new Promise(resolve => setTimeout(resolve, 600));
     setCartas(prev => prev.map(c =>
       c.id === cartaId ? { ...c, animando: false, volteado: true } : c
     ));
     // await new Promise(resolve => setTimeout(resolve, 500)); 
-    await new Promise(resolve => setTimeout(resolve, 500));  //*para probar 
+    await new Promise(resolve => setTimeout(resolve, 600));
   };
 
   const juegoAutomatico = async () => {
@@ -147,7 +146,8 @@ const Tablero = () => {
 
       cartasProcesadas.add(cartaParaVoltear.id);
       await animarVolteo(cartaParaVoltear.id);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 100));  //*para probar 
 
       const valorCarta = cartaParaVoltear.valor;
       const nuevaPosicion = Object.entries(posicionesCartas).find(
@@ -176,26 +176,21 @@ const Tablero = () => {
       );
 
       setCartas(cartasActuales);
-      // await new Promise(resolve => setTimeout(resolve, 800));
-      await new Promise(resolve => setTimeout(resolve, 200)); //*para probar
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      const quedanCartasSinVoltear = cartasActuales.some(c =>
-        !c.volteado && Object.keys(posicionesCartas).includes(c.posicion)
+      // Verificar si hay cartas sin voltear en la NUEVA posición
+      const quedanCartasSinVoltearEnNuevaPos = cartasActuales.some(
+        c => c.posicion === nuevaPosicion && !c.volteado
       );
 
-      if (!quedanCartasSinVoltear) {
+      if (!quedanCartasSinVoltearEnNuevaPos) {
         continuar = false;
         break;
       }
 
-      const nuevaPosTieneCartasSinVoltear = cartasActuales.some(
-        c => c.posicion === nuevaPosicion && !c.volteado
-      );
-
-      if (nuevaPosTieneCartasSinVoltear) {
-        posicionActual = nuevaPosicion;
-        cartasProcesadas.clear();
-      }
+      // Solo continuar si hay cartas sin voltear en la nueva posición
+      posicionActual = nuevaPosicion;
+      cartasProcesadas.clear();
     }
 
     setEstaJugando(false);
