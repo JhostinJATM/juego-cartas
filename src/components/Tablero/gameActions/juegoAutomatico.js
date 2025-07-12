@@ -6,7 +6,8 @@ export const juegoAutomatico = async ({
   setEstaJugando,
   setModoManual,
   setCartaSeleccionada,
-  posicionesCartas
+  posicionesCartas,
+   onTerminar
 }) => {
   setEstaJugando(true);
   setModoManual(false);
@@ -78,4 +79,8 @@ export const juegoAutomatico = async ({
   }
 
   setEstaJugando(false);
+  if (onTerminar) {
+    const todasVolteadas = cartasActuales.every(c => c.volteado);
+    onTerminar(todasVolteadas);
+  }
 };

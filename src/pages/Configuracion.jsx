@@ -16,8 +16,11 @@ export default function Configuracion() {
           <p className="text-gray-600">Cambia el aspecto de las cartas del juego</p>
         </div>
         
-        <div className="p-4 border border-gray-200 rounded-lg opacity-50">
-          <h2 className="text-lg font-semibold">Diseño de Tablero (Próximamente)</h2>
+        <div 
+          onClick={() => navigate('/configuracion/tablero')}
+          className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+        >
+          <h2 className="text-lg font-semibold">Diseño de Tablero</h2>
           <p className="text-gray-600">Cambia el aspecto del tablero de juego</p>
         </div>
         
