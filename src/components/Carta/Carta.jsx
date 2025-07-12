@@ -1,9 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import './Carta.css';
+import { ConfigContext } from '../../context/ConfigContext';
 
 const Carta = ({ valor, palo, index, estaBarajando, voltear: propVoltear, small = false }) => {
   const cartaRef = useRef(null);
   const [volteada, setVolteada] = useState(propVoltear);
+  const { config } = useContext(ConfigContext);
+  
   const valoresPoker = {
     1: 'A', 11: 'J', 12: 'Q', 13: 'K'
   };
@@ -32,14 +35,14 @@ const Carta = ({ valor, palo, index, estaBarajando, voltear: propVoltear, small 
     >
       <div className="cara-delantera">
         <img 
-          src={`/assets/modelo2/${valor}${palo}.png`} 
+          src={`/assets/${config.cartas}/${valor}${palo}.png`} 
           alt={`${valoresPoker[valor] || valor} de ${palo}`}
           className="w-full h-full object-cover"
         />
       </div>
       <div className="cara-trasera">
         <img 
-          src="/assets/modelo2/reverso.png" 
+          src={`/assets/${config.cartas}/reverso.png`} 
           alt="Reverso de la carta"
           className="w-full h-full object-cover"
         />
