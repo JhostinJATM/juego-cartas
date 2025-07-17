@@ -6,6 +6,7 @@ import Configuracion from './pages/Configuracion';
 import Licencias from './pages/Licencias';
 import SeleccionCartas from './pages/SeleccionCartas';
 import SeleccionTablero from './pages/SeleccionTablero';
+import SeleccionarDealer from './pages/SeleccionDealer';
 
 function App() {
   const audioRef = useRef(null);
@@ -66,6 +67,7 @@ function App() {
         <Route path="/configuracion/cartas" element={<SeleccionCartas />} />
         <Route path="/configuracion/tablero" element={<SeleccionTablero />} />
         <Route path="/licencias" element={<Licencias />} />
+        <Route path="/configuracion/dealer" element={<SeleccionarDealer />} />
       </Routes>
     </Router>
   );

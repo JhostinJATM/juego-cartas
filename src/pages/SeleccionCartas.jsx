@@ -98,7 +98,7 @@ export default function SeleccionCartas() {
           </h1>
           <p className="text-lg text-gray-400">
             {selectedCard ? (
-              <span>
+              <span> 
                 Diseño actual: <span className="text-purple-300 font-bold">{modelos.find(m => m.id === selectedCard)?.nombre}</span>
               </span>
             ) : "Selecciona un diseño"}

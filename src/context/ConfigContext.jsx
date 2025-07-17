@@ -11,7 +11,7 @@ export const ConfigProvider = ({ children }) => {
       : {
           cartas: 'modelo1',
           tablero: 'default',
-          dealer: 'default',
+          dealer: 'joker1', // Valor por defecto para el dealer
           preguntaUsuario: '',
           juegoTerminado: false,
           resultadoJuego: null

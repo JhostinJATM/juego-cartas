@@ -25,11 +25,11 @@ export default function Configuracion() {
         <h1 className="text-3xl md:text-4xl font-bold mb-10 text-center text-gray-100 text-stroke-purple font-game tracking-wider">
           CONFIGURACIÓN
         </h1>
-        
+
         {/* Tarjetas de opciones estilo futurista */}
         <div className="space-y-5">
           {/* Opción Cartas */}
-          <div 
+          <div
             onClick={() => navigate('/configuracion/cartas')}
             className="p-5 bg-gray-800/90 border-2 border-purple-500 rounded-lg cursor-pointer 
                       hover:border-purple-400 hover:shadow-[0_0_15px_rgba(167,139,250,0.3)]
@@ -53,9 +53,9 @@ export default function Configuracion() {
             </div>
             <div className="absolute bottom-0 left-0 h-0.5 bg-purple-500 transition-all duration-300 w-0 group-hover:w-full"></div>
           </div>
-          
+
           {/* Opción Tablero */}
-          <div 
+          <div
             onClick={() => navigate('/configuracion/tablero')}
             className="p-5 bg-gray-800/90 border-2 border-purple-500 rounded-lg cursor-pointer 
                       hover:border-purple-400 hover:shadow-[0_0_15px_rgba(167,139,250,0.3)]
@@ -79,30 +79,35 @@ export default function Configuracion() {
             </div>
             <div className="absolute bottom-0 left-0 h-0.5 bg-purple-500 transition-all duration-300 w-0 group-hover:w-full"></div>
           </div>
-          
+
           {/* Opción Dealer (deshabilitada) */}
-          <div 
-            className="p-5 bg-gray-800/50 border-2 border-gray-700 rounded-lg opacity-70"
+          // Reemplaza la opción deshabilitada por:
+          <div
+            onClick={() => navigate('/configuracion/dealer')}
+            className="p-5 bg-gray-800/90 border-2 border-purple-500 rounded-lg cursor-pointer 
+            hover:border-purple-400 hover:shadow-[0_0_15px_rgba(167,139,250,0.3)]
+            transition-all duration-200 group relative overflow-hidden"
           >
             <div className="flex items-center gap-4">
-              <div className="bg-gray-700 p-3 rounded-lg shadow-md">
-                <span className="text-xl text-gray-500">🃟</span>
+              <div className="bg-purple-900/80 p-3 rounded-lg group-hover:bg-purple-700 transition-colors shadow-md">
+                <span className="text-xl text-purple-300 group-hover:text-purple-200 transition-colors">🃏</span>
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-500">
+                <h2 className="text-lg font-bold text-gray-100 group-hover:text-purple-300 transition-colors">
                   Diseño de Dealer
                 </h2>
-                <p className="text-gray-600 text-sm">
-                  Próximamente - Personaliza al dealer
+                <p className="text-gray-400 group-hover:text-gray-200 transition-colors text-sm">
+                  Personaliza al dealer Joker
                 </p>
               </div>
-              <div className="ml-auto text-xl text-gray-600">
-                🔒
+              <div className="ml-auto text-xl text-gray-500 group-hover:text-purple-400 transition-colors">
+                →
               </div>
             </div>
+            <div className="absolute bottom-0 left-0 h-0.5 bg-purple-500 transition-all duration-300 w-0 group-hover:w-full"></div>
           </div>
         </div>
-        
+
         {/* Botón Volver estilo videojuego */}
         <button
           onClick={() => navigate('/')}
