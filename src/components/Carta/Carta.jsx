@@ -8,7 +8,7 @@ const Carta = ({ valor, palo, index, estaBarajando, voltear: propVoltear, small 
   const { config } = useContext(ConfigContext);
   
   const valoresPoker = {
-    1: 'A', 11: 'J', 12: 'Q', 13: 'K'
+    1: 'A', 11: 'J', 12: 'Q', 13: 'K', JOKER: 'JOKER'
   };
 
   useEffect(() => {

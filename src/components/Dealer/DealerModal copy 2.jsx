@@ -1,53 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { ConfigContext } from '../../context/ConfigContext';
 
 export const DealerModal = ({ onComenzar }) => {
   const { config, actualizarPregunta } = useContext(ConfigContext);
   const [pregunta, setPregunta] = useState(config.preguntaUsuario || '');
-  const [animationStep, setAnimationStep] = useState('entering');
-  const [isDealerShaking, setIsDealerShaking] = useState(false);
+  const [animationStep, setAnimationStep] = useState('entering'); // 'entering' | 'form-visible' | 'hiding-form' | 'moving-dealer' | 'shrinking-bg' | 'closing'
   const dealerImage = `/assets/dealer/${config.dealer}/preview.png`;
-  const inactivityTimerRef = useRef(null);
-
-  // Efecto para la vibración recurrente por inactividad
-  useEffect(() => {
-    if (animationStep !== 'form-visible') return;
-
-    const startInactivityTimer = () => {
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-
-      if (!pregunta.trim()) {
-        inactivityTimerRef.current = setTimeout(() => {
-          setIsDealerShaking(true);
-          
-          setTimeout(() => {
-            setIsDealerShaking(false);
-            startInactivityTimer();
-          }, 1000);
-        }, 5000);
-      }
-    };
-
-    startInactivityTimer();
-
-    return () => {
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-    };
-  }, [pregunta, animationStep]);
-
-  const handleInputChange = (e) => {
-    setPregunta(e.target.value);
-    setIsDealerShaking(false);
-    
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-    }
-  };
 
   useEffect(() => {
     if (config.preguntaUsuario) {
@@ -65,25 +24,21 @@ export const DealerModal = ({ onComenzar }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!pregunta.trim()) {
-      setIsDealerShaking(true);
-      setTimeout(() => setIsDealerShaking(false), 1000);
-      return;
-    }
+    if (!pregunta.trim()) return;
 
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-    }
-
+    // Paso 1: Ocultar el formulario
     setAnimationStep('hiding-form');
     
+    // Paso 2: Mover el dealer al centro
     setTimeout(() => {
       setAnimationStep('moving-dealer');
       
+      // Paso 3: Contraer el fondo
       setTimeout(() => {
         setAnimationStep('shrinking-bg');
         actualizarPregunta(pregunta);
         
+        // Paso 4: Cerrar completamente
         setTimeout(() => {
           setAnimationStep('closing');
           onComenzar();
@@ -92,30 +47,9 @@ export const DealerModal = ({ onComenzar }) => {
     }, 500);
   };
 
-  // Configuración de animaciones para el dealer
-  const getDealerAnimation = () => {
-    const baseAnimation = {
-      scale: animationStep === 'entering' ? 1.5 :
-             animationStep === 'moving-dealer' || animationStep === 'shrinking-bg' ? 1.2 : 1,
-      opacity: 1,
-      x: animationStep === 'form-visible' ? -250 : 0
-    };
-
-    if (isDealerShaking) {
-      return {
-        ...baseAnimation,
-        rotate: [0, -5, 5, -5, 5, 0],
-        x: animationStep === 'form-visible' 
-          ? [-250, -253, -247, -253, -247, -250] 
-          : [0, -3, 3, -3, 3, 0]
-      };
-    }
-
-    return baseAnimation;
-  };
-
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
+      {/* Fondo animado con contracción */}
       <motion.div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         initial={{ clipPath: 'circle(0% at 50% 50%)' }}
@@ -132,17 +66,23 @@ export const DealerModal = ({ onComenzar }) => {
         }}
       />
 
+      {/* Contenido principal */}
       <div className="relative w-full h-full flex items-center justify-center">
+        {/* Dealer */}
         <motion.div
           initial={{ scale: 1.5, opacity: 0, x: 0 }}
-          animate={getDealerAnimation()}
+          animate={{ 
+            scale: 
+              animationStep === 'entering' ? 1.5 :
+              animationStep === 'moving-dealer' || animationStep === 'shrinking-bg' ? 1.2 : 1,
+            opacity: 1,
+            x: 
+              animationStep === 'form-visible' ? -250 :
+              animationStep === 'moving-dealer' || animationStep === 'shrinking-bg' || animationStep === 'closing' ? 0 : 0
+          }}
           transition={{ 
             duration: 0.8,
-            ease: [0.43, 0.13, 0.23, 0.96],
-            ...(isDealerShaking && {
-              rotate: { duration: 0.6 },
-              x: { duration: 0.6 }
-            })
+            ease: [0.43, 0.13, 0.23, 0.96]
           }}
           className="absolute z-10"
         >
@@ -153,6 +93,7 @@ export const DealerModal = ({ onComenzar }) => {
           />
         </motion.div>
 
+        {/* Modal de pregunta */}
         <AnimatePresence>
           {(animationStep === 'form-visible' || animationStep === 'hiding-form') && (
             <motion.div
@@ -175,7 +116,7 @@ export const DealerModal = ({ onComenzar }) => {
                     <input
                       type="text"
                       value={pregunta}
-                      onChange={handleInputChange}
+                      onChange={(e) => setPregunta(e.target.value)}
                       className="w-full bg-gray-700 border-2 border-gray-600 text-gray-100 p-3 rounded-md 
                                 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-500
                                 placeholder-gray-400 transition-all duration-200"

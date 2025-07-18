@@ -81,7 +81,6 @@ export default function Configuracion() {
           </div>
 
           {/* Opción Dealer (deshabilitada) */}
-          // Reemplaza la opción deshabilitada por:
           <div
             onClick={() => navigate('/configuracion/dealer')}
             className="p-5 bg-gray-800/90 border-2 border-purple-500 rounded-lg cursor-pointer 
