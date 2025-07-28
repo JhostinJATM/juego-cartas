@@ -4,7 +4,8 @@ import { ConfigContext } from '../../context/ConfigContext';
 
 export const DealerModal = ({ onComenzar }) => {
   const { config, actualizarPregunta } = useContext(ConfigContext);
-  const [pregunta, setPregunta] = useState(config.preguntaUsuario || '');
+  // const [pregunta, setPregunta] = useState(config.preguntaUsuario || '');
+  const [pregunta, setPregunta] = useState('');
   const [animationStep, setAnimationStep] = useState('entering');
   const [isDealerShaking, setIsDealerShaking] = useState(false);
   const dealerImage = `/assets/dealer/${config.dealer}/preview.png`;
@@ -117,7 +118,7 @@ export const DealerModal = ({ onComenzar }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       <motion.div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         initial={{ clipPath: 'circle(0% at 50% 50%)' }}
         animate={{ 
           clipPath: 

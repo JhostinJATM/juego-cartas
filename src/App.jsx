@@ -12,33 +12,33 @@ function App() {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    // Inicializar el audio
+    // Crear la instancia del audio
     audioRef.current = new Audio('/assets/sound/musica_ambiente.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.3; // Ajusta el volumen según necesites
+    audioRef.current.loop = true;          // Loop infinito
+    audioRef.current.volume = 0.3;         // Volumen ajustado
 
-    // Manejar la reproducción (con captura de errores por políticas de autoplay)
     const playAudio = async () => {
       try {
         await audioRef.current.play();
       } catch (err) {
         console.log('Autoplay bloqueado:', err);
-        // Puedes agregar un botón de "Activar sonido" en tu interfaz
+        // Aquí puedes mostrar un botón para activar sonido manualmente
       }
     };
 
-    // Intenta reproducir cuando el usuario interactúa con la página
+    // Handler que se ejecuta con la primera interacción del usuario
     const handleUserInteraction = () => {
       playAudio();
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
 
+    // Escuchar la primera interacción para activar el audio
     document.addEventListener('click', handleUserInteraction);
     document.addEventListener('keydown', handleUserInteraction);
 
     return () => {
-      // Limpieza al desmontar
+      // Limpiar cuando el componente se desmonte
       if (audioRef.current) {
         audioRef.current.pause();
         document.removeEventListener('click', handleUserInteraction);
@@ -49,17 +49,7 @@ function App() {
 
   return (
     <Router>
-      {/* Componente de audio oculto (opcional, para compatibilidad) */}
-      <div style={{ display: 'none' }}>
-        <audio 
-          ref={audioRef} 
-          loop 
-          controls={false}
-        >
-          <source src="/assets/sound/musica_ambiente.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-      
+      {/* Ya no hay audio oculto en JSX */}
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/juego" element={<Juego />} />

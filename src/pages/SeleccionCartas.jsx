@@ -9,6 +9,7 @@ export default function SeleccionCartas() {
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(config.cartas);
 
+  // Cargar modelos de cartas desde el servidor
   useEffect(() => {
     const cargarModelos = async () => {
       try {

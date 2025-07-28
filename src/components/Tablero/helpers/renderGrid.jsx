@@ -21,7 +21,8 @@ export const renderGrid = ({
         <div
           key={key}
           className={`w-24 h-32 flex items-center justify-center relative rounded-lg ${
-            valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
+            // valor ? 'bg-white/50 backdrop-blur-sm border-2 border-gray-200' : 'opacity-0'
+            valor ? 'bg-white/30 backdrop-blur-sm border-0' : 'opacity-0'
           }`}
           onDragOver={(e) => manejarDragOver(e)}
           onDrop={(e) => manejarDrop(e, key)}

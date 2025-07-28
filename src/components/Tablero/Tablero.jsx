@@ -121,6 +121,7 @@ const Tablero = ({ onJuegoTerminado }) => {
               className="absolute inset-0 p-8 flex flex-col justify-center"
             >
               <div className="space-y-8">
+                {/* Set de cartas */}
                 <div className="relative h-48 w-full flex justify-center items-center">
                   {tableroLogic.cartas
                     .filter(c => !c.posicion)
