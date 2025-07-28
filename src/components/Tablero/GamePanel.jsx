@@ -35,8 +35,7 @@ const GamePanel = ({ cartas }) => {
                     : 'bg-gray-800/50 border border-gray-700/50 hover:border-red-500/30'
                 }`}
               >
-                {/* Carta con margen derecho aumentado */}
-                <div className="flex-shrink-0 w-8 h-auto mr-2"> {/* Cambiado de mr-1.5 a mr-2 */}
+                <div className="flex-shrink-0 w-8 h-auto mr-2"> 
                   <Carta 
                     valor={valor} 
                     palo="C" 
@@ -46,7 +45,6 @@ const GamePanel = ({ cartas }) => {
                   />
                 </div>
                 
-                {/* Contenedor de progreso centrado verticalmente */}
                 <div className="flex-1 min-w-0 flex flex-col justify-center h-full space-y-1"> {/* Added justify-center */}
                   <div className="flex justify-between items-center">
                     <span className={`text-xs font-mono ${
@@ -61,7 +59,6 @@ const GamePanel = ({ cartas }) => {
                     </span>
                   </div>
                   
-                  {/* Barra de progreso centrada */}
                   <div className="ml-9 flex justify-center items-center h-4"> {/* Nuevo contenedor centrado */}
                     <div className="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden shadow-inner">
                       <div 
@@ -71,7 +68,6 @@ const GamePanel = ({ cartas }) => {
                     </div>
                   </div>
                   
-                  {/* Indicadores de palo */}
                   <div className="flex gap-1 justify-end">
                     {['C', 'D', 'E', 'T'].map((palo, idx) => (
                       <div 
