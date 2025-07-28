@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion,AnimatePresence } from 'framer-motion';
 import Carta from '../Carta/Carta';
 import { useTableroLogic, posicionesCartas } from './useTableroLogic';
 import { barajar } from './gameActions/barajar';
@@ -8,7 +8,7 @@ import { juegoAutomatico } from './gameActions/juegoAutomatico';
 import { iniciarModoManual } from './gameActions/modoManual';
 import { manejarDragStart, manejarDragOver, manejarDrop } from './helpers/dragAndDrop';
 import { renderGrid } from './helpers/renderGrid';
-import GamePanel from './GamePanel';
+// import GamePanel from './GamePanel';
 import { DealerModal } from '../Dealer/DealerModal';
 import { ResultadoModal } from '../Dealer/ResultadoModal';
 import { ConfigContext } from '../../context/ConfigContext';
@@ -101,16 +101,9 @@ const Tablero = ({ onJuegoTerminado }) => {
       <div className="w-1/3 min-w-[300px] relative">
         <AnimatePresence>
           {showGamePanel ? (
-            <motion.div
-              key="gamePanel"
-              initial={{ x: '100%', opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '100%', opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 p-4"
-            >
-              <GamePanel cartas={tableroLogic.cartas} />
-            </motion.div>
+            <div>
+
+            </div>
           ) : (
             <motion.div
               key="controlPanel"

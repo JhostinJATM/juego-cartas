@@ -5,9 +5,6 @@ export const barajar = async ({
   setCartaSeleccionada,
   setPosicionActual
 }) => {
-  // Crear y configurar el audio
-  const audioBarajar = new Audio('/assets/sound/barajeo.mp3');
-  audioBarajar.loop = true; // Para que continúe sonando durante toda la animación
   
   setEstaBarajando(true);
   setCartas(prev => prev.map(c => ({ ...c, volteado: false, posicion: null })));
@@ -27,7 +24,6 @@ export const barajar = async ({
   });
   
   await new Promise(resolve => setTimeout(resolve, 800));
-  audioBarajar.play().catch(e => console.log("No se pudo reproducir audio:", e));
 
   for (let i = 0; i < mitad; i++) {
     if (cartasDom[i]) {
@@ -53,5 +49,4 @@ export const barajar = async ({
   });
 
   setEstaBarajando(false);
-  audioBarajar.pause(); // Detener el audio cuando termine la animación
 };
